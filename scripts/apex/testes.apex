@@ -19,6 +19,6 @@ Account conta = [SELECT Id FROM Account LIMIT 1];
 
 insert new Task(Subject = 'Phone', WhatId = conta.Id, Status = 'In Progress');
 
-Product2 produto = new Product2(Name = 'Pista Hotwheels Ataque do Tubarão', ProductCode = '57657');
+Product2 produto = new Product2(Name = 'Agua seca', ProductCode = '3333');
 
 insert produto;
