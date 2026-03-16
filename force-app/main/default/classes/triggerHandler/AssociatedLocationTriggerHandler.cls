@@ -4,6 +4,6 @@ public with sharing class AssociatedLocationTriggerHandler extends TriggerHandle
     }
 
     public override void afterInsert() {
-        AssociatedLocationHelper.verifyMembership();
+        AssociatedLocationHelper.verifyTeamMembership();
     }
 }
