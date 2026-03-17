@@ -8,7 +8,7 @@ public with sharing class AssociatedLocationTriggerHandler extends TriggerHandle
             return;
         }
 
-        AssociatedLocationHelper.addNewMembers(Trigger.new);
+        AssociatedLocationHelper.addMembersFromLocations(Trigger.new);
     }
 
     public override void afterUpdate() {
@@ -16,17 +16,23 @@ public with sharing class AssociatedLocationTriggerHandler extends TriggerHandle
             return;
         }
 
+        List<AssociatedLocation> newList = (List<AssociatedLocation>) Trigger.new;
+        List<AssociatedLocation> oldList = (List<AssociatedLocation>) Trigger.old;
+
+
         List<AssociatedLocation> newUserLocations = new List<AssociatedLocation>();
         List<AssociatedLocation> oldUserLocations = new List<AssociatedLocation>();
 
-        for (Integer = 0; i < novos.size(); i++) {
-            if (Trigger.new[i].User__c != Trigger.old[i].User__c) {
-                newUserLocations.add(Trigger.new[i]);
-                oldUserLocations.add(Trigger.old[i]);
+
+
+        for (Integer i = 0; i < Trigger.new.size(); i++) {
+            if (newList[i].User__c != oldList[i].User__c) {
+                newUserLocations.add(newList[i]);
+                oldUserLocations.add(oldList[i]);
             }
         }
 
-        AssociatedLocationHelper.addNewMembers(newUserLocations);
-        AssociatedLocationHelper.removeOldMembers(oldUserLocations);
+        AssociatedLocationHelper.addMembersFromLocations(newUserLocations);
+        AssociatedLocationHelper.removeMembersFromLocations(oldUserLocations);
     }
 }

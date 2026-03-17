@@ -11,7 +11,7 @@ public with sharing class AssociatedLocationHelper {
         Set<Id> accIds = new Set<Id>();
         Set<String> accUserPair = new Set<String>();
 
-        for (AssociatedLocation location : locations) {
+        for (AssociatedLocation location : newUserLocations) {
             userIds.add(location.User__c);
             accIds.add(location.ParentRecordId);
             accUserPair.add(createIdPair(location.User__c, location.ParentRecordId));
