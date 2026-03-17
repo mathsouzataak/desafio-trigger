@@ -9,12 +9,10 @@ public with sharing class AssociatedLocationHelper {
 
         Set<Id> userIds = new Set<Id>();
         Set<Id> accIds = new Set<Id>();
-        // Set<String> accUserPair = new Set<String>();
 
         for (AssociatedLocation location : newUserLocations) {
             userIds.add(location.User__c);
             accIds.add(location.ParentRecordId);
-            // accUserPair.add(createIdPair(location.User__c, location.ParentRecordId));
         }
 
 
@@ -57,16 +55,22 @@ public with sharing class AssociatedLocationHelper {
 
         Set<Id> userIdsForDeletion = new Set<Id>();
         Set<Id> accIdsForDeletion = new Set<Id>();
+        Set<Id> pairForDeletion = new Set<String>();
         for (AssociatedLocation location : oldUserLocations) {
             if (!associatedLocPairs.contains(createIdPair(location.User__c, location.ParentRecordId))) {
                 userIdsForDeletion.add(location.User__c);
                 accIdsForDeletion.add(location.ParentRecordId);
+                pairForDeletion.add(createIdPair(location.User__c, location.ParentRecordId));
             }
         }
 
-        oldMembers = [SELECT Id, AccountId, UserId, TeamMemberRole 
-                        FROM AccountTeamMember 
-                        WHERE UserId IN :userIdsForDeletion AND AccountId IN :accIdsForDeletion];
+        for (AccountTeamMember member : [SELECT Id, AccountId, UserId, TeamMemberRole 
+                                            FROM AccountTeamMember 
+                                            WHERE UserId IN :userIdsForDeletion AND AccountId IN :accIdsForDeletion]) {
+            if (pairForDeletion.contains(createIdPair(member.UserId, member.AccountId))) {
+                oldMembers.add(member);
+            }
+        }
 
         delete oldMembers;
     }
