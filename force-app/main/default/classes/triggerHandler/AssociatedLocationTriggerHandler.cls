@@ -33,6 +33,6 @@ public with sharing class AssociatedLocationTriggerHandler extends TriggerHandle
         }
 
         AssociatedLocationHelper.addMembersFromLocations(newUserLocations);
-        AssociatedLocationHelper.removeMembersFromLocations(oldUserLocations);
+        AssociatedLocationHelper.removeMembersWithoutAL(oldUserLocations);
     }
 }

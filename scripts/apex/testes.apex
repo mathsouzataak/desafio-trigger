@@ -23,6 +23,8 @@
 
 // insert produto;
 
-insert new 
 
-insert new AssociatedLocation(User__c = '005bm00000NgDrdAAF', ParentRecordId = '001bm00001bVLDmAAO', LocationId = '131bm000000OK8rAAG');
+delete [SELECT Id FROM AssociatedLocation];
+delete [SELECT Id FROM AccountTeamMember];
+
+insert new AssociatedLocation(User__c = '005bm00000NgDrdAAF', ParentRecordId = '001bm00001bVLDgAAO', LocationId = '131bm000000ONOTAA4');
