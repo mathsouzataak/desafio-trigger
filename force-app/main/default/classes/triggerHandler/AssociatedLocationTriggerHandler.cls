@@ -20,4 +20,12 @@ public with sharing class AssociatedLocationTriggerHandler extends TriggerHandle
 
         AssociatedLocationHelper.onChangeAccount();
     }
+
+    public override void afterDelete() {
+        if (Trigger.old == null || Trigger.old.isEmpty()) {
+            return;
+        }
+
+        AssociatedLocationHelper.removeMembersWithoutAL(Trigger.old);
+    }
 }

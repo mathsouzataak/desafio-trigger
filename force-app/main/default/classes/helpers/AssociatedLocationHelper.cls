@@ -38,7 +38,7 @@ public with sharing class AssociatedLocationHelper {
         }
 
         if (!oldAccountLocations.isEmpty()) {
-            changeUserToNewAccountFromLocation(oldAccountLocations, newAccountLocations);
+            changeMemberToNewAccountFromLocation(oldAccountLocations, newAccountLocations);
             removeMembersWithoutAL(oldAccountLocations);
         }
     }
@@ -115,7 +115,7 @@ public with sharing class AssociatedLocationHelper {
         delete oldMembers;
     }
 
-    public static void changeUserToNewAccountFromLocation(List<AssociatedLocation> oldAccountLocations, List<AssociatedLocation> newAccountLocations) {
+    public static void changeMemberToNewAccountFromLocation(List<AssociatedLocation> oldAccountLocations, List<AssociatedLocation> newAccountLocations) {
         List<AccountTeamMember> members = new List<AccountTeamMember>();
 
         Set<Id> userIds = new Set<Id>();
