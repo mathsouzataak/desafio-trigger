@@ -3,6 +3,46 @@ public with sharing class AssociatedLocationHelper {
 
     }
 
+    public static void onChangeUser() {
+        List<AssociatedLocation> newList = (List<AssociatedLocation>) Trigger.new;
+        List<AssociatedLocation> oldList = (List<AssociatedLocation>) Trigger.old;
+
+        List<AssociatedLocation> newUserLocations = new List<AssociatedLocation>();
+        List<AssociatedLocation> oldUserLocations = new List<AssociatedLocation>();
+
+        for (Integer i = 0; i < newList.size(); i++) {
+            if (newList[i].User__c != oldList[i].User__c) {
+                newUserLocations.add(newList[i]);
+                oldUserLocations.add(oldList[i]);
+            }
+        }
+
+        if (!oldUserLocations.isEmpty()) {
+            addMembersFromLocations(newUserLocations);
+            removeMembersWithoutAL(oldUserLocations);
+        }
+    }
+
+    public static void onChangeAccount() {
+        List<AssociatedLocation> newList = (List<AssociatedLocation>) Trigger.new;
+        List<AssociatedLocation> oldList = (List<AssociatedLocation>) Trigger.old;
+
+        List<AssociatedLocation> newAccountLocations = new List<AssociatedLocation>();
+        List<AssociatedLocation> oldAccountLocations = new List<AssociatedLocation>();
+
+        for (Integer i = 0; i < newList.size(); i++) {
+            if (newList[i].ParentRecordId != oldList[i].ParentRecordId) {
+                newAccountLocations.add(newList[i]);
+                oldAccountLocations.add(oldList[i]);
+            }
+        }
+
+        if (!oldAccountLocations.isEmpty()) {
+            changeUserToNewAccountFromLocation(oldAccountLocations, newAccountLocations);
+            removeMembersWithoutAL(oldAccountLocations);
+        }
+    }
+
 
     public static void addMembersFromLocations(List<AssociatedLocation> newUserLocations) {
         List<AccountTeamMember> newMembers = new List<AccountTeamMember>();
@@ -55,7 +95,7 @@ public with sharing class AssociatedLocationHelper {
 
         Set<Id> userIdsForDeletion = new Set<Id>();
         Set<Id> accIdsForDeletion = new Set<Id>();
-        Set<Id> pairForDeletion = new Set<String>();
+        Set<String> pairForDeletion = new Set<String>();
         for (AssociatedLocation location : oldUserLocations) {
             if (!associatedLocPairs.contains(createIdPair(location.User__c, location.ParentRecordId))) {
                 userIdsForDeletion.add(location.User__c);
@@ -73,6 +113,34 @@ public with sharing class AssociatedLocationHelper {
         }
 
         delete oldMembers;
+    }
+
+    public static void changeUserToNewAccountFromLocation(List<AssociatedLocation> oldAccountLocations, List<AssociatedLocation> newAccountLocations) {
+        List<AccountTeamMember> members = new List<AccountTeamMember>();
+
+        Set<Id> userIds = new Set<Id>();
+        Set<Id> accIds = new Set<Id>();
+        Set<String> accUserPair = new Set<String>();
+
+        for (AssociatedLocation location : oldAccountLocations) {
+            userIds.add(location.User__c);
+        }
+
+        Set<String> associatedLocPairs = new Set<String>();
+        for (AssociatedLocation location : [SELECT Id, ParentRecordId, User__c
+                                            FROM AssociatedLocation
+                                            WHERE User__c IN :userIds]) {
+            associatedLocPairs.add(createIdPair(location.User__c, location.ParentRecordId));
+        }
+
+
+        for (Integer i = 0; i < oldAccountLocations.size(); i++) {
+            if (!associatedLocPairs.contains(createIdPair(oldAccountLocations[i].User__c, oldAccountLocations[i].ParentRecordId))) {
+                members.add(new AccountTeamMember(UserId = oldAccountLocations[i].User__c, AccountId = newAccountLocations[i].ParentRecordId));
+            }
+        }
+
+        insert members;
     }
 
     private static String createIdPair(Id userId, Id accId) {
